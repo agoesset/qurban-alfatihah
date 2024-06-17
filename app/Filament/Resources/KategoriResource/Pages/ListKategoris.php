@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\ProgressResource\Pages;
+namespace App\Filament\Resources\KategoriResource\Pages;
 
-use App\Filament\Resources\ProgressResource;
+use App\Filament\Resources\KategoriResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListProgress extends ListRecords
+class ListKategoris extends ListRecords
 {
-    protected static string $resource = ProgressResource::class;
+    protected static string $resource = KategoriResource::class;
 
     protected function getHeaderActions(): array
     {

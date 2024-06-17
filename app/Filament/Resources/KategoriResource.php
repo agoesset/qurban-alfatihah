@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ProgressResource\Pages;
-use App\Filament\Resources\ProgressResource\RelationManagers;
-use App\Models\Progress;
+use App\Filament\Resources\KategoriResource\Pages;
+use App\Filament\Resources\KategoriResource\RelationManagers;
+use App\Models\Kategori;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ProgressResource extends Resource
+class KategoriResource extends Resource
 {
-    protected static ?string $model = Progress::class;
+    protected static ?string $model = Kategori::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -23,15 +23,12 @@ class ProgressResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_progress')
+                Forms\Components\TextInput::make('nama_kategori')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('jumlah_target')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('jumlah_progress')
-                    ->maxLength(255),
                 Forms\Components\FileUpload::make('image')
-                    ->image(),
+                    ->image()
+                    ->required(),
             ]);
     }
 
@@ -40,11 +37,25 @@ class ProgressResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('image'),
-                Tables\Columns\TextColumn::make('nama_progress')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('jumlah_target')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('jumlah_progress')
+                Tables\Columns\TextColumn::make('nama_kategori')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Domba Promo' => 'danger',
+                        'Domba Tipe A' => 'gray',
+                        'Domba Tipe B' => 'info',
+                        'Domba Tipe C' => 'primary',
+                        'Domba Tipe D' => 'success',
+                        'Domba Spesial' => 'warning',
+                        'Kambing Promo' => 'danger',
+                        'Kambing Tipe A' => 'gray',
+                        'Kambing Tipe B' => 'info',
+                        'Kambing Tipe C' => 'primary',
+                        'Kambing Tipe D' => 'success',
+                        'Kambing Tipe E' => 'warning',
+                        'Sapi Jawa Favorit' => 'primary',
+                        'Sapi Jawa Premium' => 'success',
+                        'Sapi Jawa Super' => 'warning',
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -78,9 +89,9 @@ class ProgressResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProgress::route('/'),
-            'create' => Pages\CreateProgress::route('/create'),
-            'edit' => Pages\EditProgress::route('/{record}/edit'),
+            'index' => Pages\ListKategoris::route('/'),
+            'create' => Pages\CreateKategori::route('/create'),
+            'edit' => Pages\EditKategori::route('/{record}/edit'),
         ];
     }
 }

@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('progress', function (Blueprint $table) {
+        Schema::create('kategoris', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_progress');
-            $table->string('jumlah_target')->nullable();
-            $table->string('jumlah_progress')->nullable();
-            $table->string('image')->nullable();
+            $table->string('nama_kategori');
+            $table->string('image');
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('progress');
+        Schema::dropIfExists('kategoris');
     }
 };
