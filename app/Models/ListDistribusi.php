@@ -29,6 +29,38 @@ class ListDistribusi extends Model
     ];
 
     /**
+     * Relationship to DistribusiDetail
+     */
+    public function details()
+    {
+        return $this->hasMany(DistribusiDetail::class);
+    }
+
+    /**
+     * Get total allocated weight from all details
+     */
+    public function getTotalAllocatedWeightAttribute(): float
+    {
+        return $this->details()->sum('berat');
+    }
+
+    /**
+     * Get breakdown by meat type
+     */
+    public function getMeatBreakdownAttribute(): array
+    {
+        $breakdown = [];
+        foreach ($this->details as $detail) {
+            $jenis = $detail->hewanMeatPart->jenis_bagian;
+            if (!isset($breakdown[$jenis])) {
+                $breakdown[$jenis] = 0;
+            }
+            $breakdown[$jenis] += $detail->berat;
+        }
+        return $breakdown;
+    }
+
+    /**
      * Get the activity log name for this model
      */
     protected function getActivityLogName(): string

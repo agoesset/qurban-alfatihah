@@ -20,21 +20,55 @@ class ListHewanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('kode_hewan')
-                    ->required()
-                    ->maxLength(255),
                 Forms\Components\Select::make('kategori_id')
+                    ->label('Kategori Hewan')
                     ->required()
-                    ->relationship('kategori', 'nama_kategori'),
+                    ->relationship('kategori', 'nama_kategori')
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->afterStateUpdated(function ($state, Forms\Set $set, $record) {
+                        // Only auto-generate for new records
+                        if (!$record) {
+                            try {
+                                $kode = \App\Models\ListHewan::generateKodeHewan($state);
+                                $set('kode_hewan', $kode);
+                            } catch (\Exception $e) {
+                                // Silently fail, user can input manually
+                            }
+                        }
+                    }),
+
+                Forms\Components\TextInput::make('kode_hewan')
+                    ->label('Kode Hewan')
+                    ->maxLength(255)
+                    ->unique(ignoreRecord: true)
+                    ->disabled(fn ($record) => $record !== null) // Disable editing existing kode
+                    ->dehydrated()
+                    ->helperText('Kode akan otomatis di-generate berdasarkan kategori'),
+
                 Forms\Components\TextInput::make('bobot')
+                    ->label('Bobot (kg)')
                     ->required()
-                    ->numeric(),
-                Forms\Components\Toggle::make('penyembelihan')
-                    ->required(),
-                Forms\Components\Toggle::make('pengulitan')
-                    ->required(),
-                Forms\Components\Toggle::make('penimbangan')
-                    ->required(),
+                    ->numeric()
+                    ->minValue(0.01)
+                    ->maxValue(999.99)
+                    ->suffix('kg')
+                    ->step(0.01),
+
+                Forms\Components\Section::make('Status Workflow')
+                    ->schema([
+                        Forms\Components\Toggle::make('penyembelihan')
+                            ->label('Sudah Disembelih')
+                            ->default(false),
+                        Forms\Components\Toggle::make('pengulitan')
+                            ->label('Sudah Dikuliti')
+                            ->default(false),
+                        Forms\Components\Toggle::make('penimbangan')
+                            ->label('Sudah Ditimbang')
+                            ->default(false),
+                    ])
+                    ->columns(3),
             ]);
     }
 
