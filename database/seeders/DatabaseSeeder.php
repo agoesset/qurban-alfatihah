@@ -12,11 +12,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // Check environment
+        if (app()->environment('local', 'development')) {
+            // For development: use DevelopmentSeeder with sample data
+            $this->call(DevelopmentSeeder::class);
+        } else {
+            // For production: only seed kategoris
+            $this->call(KategoriSeeder::class);
+            $this->command->info('✅ Production seeding completed (Kategoris only)');
+            $this->command->warn('⚠️  Create admin user manually for security');
+        }
     }
 }

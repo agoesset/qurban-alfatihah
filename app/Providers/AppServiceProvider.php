@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\ListHewan;
+use App\Observers\ListHewanObserver;
 use Illuminate\Support\ServiceProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentColor;
@@ -21,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register Filament colors
         FilamentColor::register([
             'danger' => Color::Red,
             'gray' => Color::Zinc,
@@ -29,5 +32,8 @@ class AppServiceProvider extends ServiceProvider
             'success' => Color::Purple,
             'warning' => Color::Amber,
         ]);
+
+        // Register model observers
+        ListHewan::observe(ListHewanObserver::class);
     }
 }

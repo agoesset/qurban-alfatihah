@@ -1,66 +1,307 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Qurban Al-Fatihah - Sistem Manajemen Qurban
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi web untuk mengelola operasional penyembelihan hewan kurban pada Hari Raya Idul Adha, mulai dari penerimaan hewan, proses penyembelihan, hingga distribusi daging kepada penerima.
 
-## About Laravel
+## 🎯 Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 1. **Manajemen Kategori Hewan**
+- 15 kategori hewan (Domba, Kambing, Sapi)
+- Berbagai tipe kualitas (Promo, Tipe A-E, Spesial, Premium, dll)
+- Upload gambar untuk setiap kategori
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 2. **Tracking Inventory Hewan**
+- Kode unik untuk setiap hewan
+- Pencatatan bobot hewan
+- Status proses workflow:
+  - ✅ Penyembelihan
+  - ✅ Pengulitan
+  - ✅ Penimbangan
+- Timestamp otomatis untuk setiap tahap proses
+- Soft delete support
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 3. **Manajemen Distribusi**
+- Daftar penerima (beneficiary) dan shohibul qurban (donatur)
+- Permintaan bagian daging (Daging, Jeroan, Kepala & Kaki, Buntut)
+- Status pengemasan dan distribusi
+- Pencatatan alamat penerima
 
-## Learning Laravel
+### 4. **Dashboard & Statistik**
+- Real-time metrics untuk setiap jenis hewan
+- Tracking progress workflow
+- Monitoring status distribusi
+- Laporan pembungkusan dan distribusi
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 💻 Tech Stack
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Backend:** PHP 8.1+ with Laravel 10.10+
+- **Admin Panel:** Filament 3.2
+- **Frontend:** Tailwind CSS 3.4.4 + DaisyUI 4.12.2
+- **Build Tool:** Vite 5.0
+- **Database:** MySQL
+- **Authentication:** Laravel Sanctum
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 📋 Requirements
 
-## Laravel Sponsors
+- PHP >= 8.1
+- Composer
+- Node.js & npm
+- MySQL >= 5.7 atau MariaDB >= 10.3
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🚀 Installation
 
-### Premium Partners
+### 1. Clone Repository
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```bash
+git clone <repository-url>
+cd qurban-alfatihah
+```
 
-## Contributing
+### 2. Install Dependencies
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+# Install PHP dependencies
+composer install
 
-## Code of Conduct
+# Install Node.js dependencies
+npm install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3. Environment Configuration
 
-## Security Vulnerabilities
+```bash
+# Copy environment file
+cp .env.example .env
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Generate application key
+php artisan key:generate
+```
 
-## License
+### 4. Database Setup
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Edit `.env` file dan sesuaikan konfigurasi database:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=qurban_alfatihah
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Buat database:
+
+```bash
+mysql -u root -p
+CREATE DATABASE qurban_alfatihah;
+exit;
+```
+
+### 5. Run Migrations
+
+```bash
+# Run migrations
+php artisan migrate
+
+# (Optional) Seed database with sample data
+php artisan db:seed
+```
+
+### 6. Build Assets
+
+```bash
+# Development
+npm run dev
+
+# Production
+npm run build
+```
+
+### 7. Start Development Server
+
+```bash
+php artisan serve
+```
+
+Aplikasi akan berjalan di `http://localhost:8000`
+
+## 🗄️ Database Schema
+
+### Tabel Utama
+
+#### `kategoris`
+- `id`: Primary key
+- `nama_kategori`: Nama kategori (e.g., "Domba Tipe A", "Kambing Promo", "Sapi Jawa Premium")
+- `image`: Path gambar kategori
+- `created_at`, `updated_at`: Timestamps
+
+#### `list_hewans`
+- `id`: Primary key
+- `kode_hewan`: Kode unik hewan (unique)
+- `kategori_id`: Foreign key ke tabel kategoris
+- `bobot`: Bobot hewan (decimal 5,2)
+- `penyembelihan`: Boolean status penyembelihan
+- `pengulitan`: Boolean status pengulitan
+- `penimbangan`: Boolean status penimbangan
+- `penyembelihan_updated_at`: Timestamp penyembelihan
+- `pengulitan_updated_at`: Timestamp pengulitan
+- `penimbangan_updated_at`: Timestamp penimbangan
+- `created_at`, `updated_at`, `deleted_at`: Timestamps
+
+#### `list_distribusis`
+- `id`: Primary key
+- `nama`: Nama penerima
+- `shohibul_qurban`: Boolean (true = donatur, false = penerima manfaat)
+- `jumlah`: Jumlah bagian yang diterima (integer)
+- `request`: JSON array permintaan bagian (Daging, Jeroan, Kepala & Kaki, Buntut)
+- `alamat`: Alamat penerima
+- `terbungkus`: Boolean status pembungkusan
+- `terdistribusi`: Boolean status distribusi
+- `created_at`, `updated_at`: Timestamps
+
+### Database Indexes
+
+Untuk performa optimal, aplikasi menggunakan indexes pada:
+- Foreign keys
+- Kolom yang sering di-filter (kategori_id, status workflow)
+- Kolom untuk pencarian (nama, kode_hewan)
+- Composite indexes untuk queries kompleks
+
+## 📝 Usage Guide
+
+### Admin Panel
+
+Admin panel dapat diakses melalui `/admin`. Fitur yang tersedia:
+
+1. **Dashboard**: Overview statistik dan progress
+2. **Kategori**: Manajemen kategori hewan
+3. **List Hewan**: Input dan tracking hewan
+4. **Distribusi**: Manajemen distribusi daging
+
+### Helper Class
+
+Class `App\Helpers\Helper` menyediakan berbagai method untuk statistik:
+
+```php
+use App\Helpers\Helper;
+
+// Count hewan
+Helper::countDomba();
+Helper::countKambing();
+Helper::countSapi();
+
+// Progress penyembelihan
+Helper::sembelihDomba();
+Helper::lastUpdatedPenyembelihanDomba();
+
+// Statistik distribusi
+Helper::countDaging();
+Helper::bungkusDaging();
+Helper::distribusiShohibulQurban();
+
+// Calculate progress
+Helper::calculateProgress('countDomba', 'sembelihDomba');
+```
+
+## 🔐 Validation Rules
+
+Aplikasi menggunakan Form Request untuk validasi:
+
+### ListHewan Validation
+- `kode_hewan`: Required, unique, format uppercase alphanumeric
+- `kategori_id`: Required, must exist in kategoris table
+- `bobot`: Required, numeric, range 0.01-999.99 kg
+
+### ListDistribusi Validation
+- `nama`: Required, min 3 chars, max 255 chars
+- `jumlah`: Required, integer, range 1-1000
+- `request`: Required array, valid options only
+- `alamat`: Required, min 5 chars, max 500 chars
+
+### Kategori Validation
+- `nama_kategori`: Required, unique, must start with "Domba", "Kambing", or "Sapi"
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test file
+php artisan test --filter ExampleTest
+
+# Run with coverage
+php artisan test --coverage
+```
+
+## 📦 Recent Improvements (v2.1)
+
+### Critical Bug Fixes
+✅ **Fixed JSON query bugs** in Helper.php (countDaging, countJeroan, dll)
+✅ **Fixed hard-coded kategori IDs** - now using dynamic lookup
+✅ **Added namespace** to Helper.php
+✅ **Replaced deprecated $dates** property with $casts
+
+### Performance Enhancements
+✅ **Added database indexes** for better query performance
+✅ **Optimized Helper queries** using whereIn instead of whereBetween
+
+### Code Quality
+✅ **Added Form Request validation** classes
+✅ **Type hints** for all Helper methods
+✅ **Consistent return types** (Carbon objects instead of mixed)
+✅ **Proper model casts** for type safety
+
+## 🔧 Development
+
+### Code Style
+
+Project ini menggunakan:
+- Laravel Pint untuk PHP code formatting
+- ESLint untuk JavaScript (jika ada)
+- Tailwind CSS untuk styling
+
+```bash
+# Format PHP code
+./vendor/bin/pint
+
+# Check code style
+./vendor/bin/pint --test
+```
+
+### Running in Docker (Laravel Sail)
+
+```bash
+# Start containers
+./vendor/bin/sail up -d
+
+# Run artisan commands
+./vendor/bin/sail artisan migrate
+
+# Run npm commands
+./vendor/bin/sail npm run dev
+```
+
+## 🤝 Contributing
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 👥 Authors
+
+- Development Team - Al-Fatihah Organization
+
+## 📞 Support
+
+For issues and questions, please create an issue in the repository.
+
+---
+
+**Note:** This is version 2.1 with critical bug fixes and performance improvements. For production deployment, ensure all migrations are run and environment is properly configured.

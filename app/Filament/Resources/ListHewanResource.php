@@ -20,21 +20,55 @@ class ListHewanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('kode_hewan')
-                    ->required()
-                    ->maxLength(255),
                 Forms\Components\Select::make('kategori_id')
+                    ->label('Kategori Hewan')
                     ->required()
-                    ->relationship('kategori', 'nama_kategori'),
+                    ->relationship('kategori', 'nama_kategori')
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->afterStateUpdated(function ($state, Forms\Set $set, $record) {
+                        // Only auto-generate for new records
+                        if (!$record) {
+                            try {
+                                $kode = \App\Models\ListHewan::generateKodeHewan($state);
+                                $set('kode_hewan', $kode);
+                            } catch (\Exception $e) {
+                                // Silently fail, user can input manually
+                            }
+                        }
+                    }),
+
+                Forms\Components\TextInput::make('kode_hewan')
+                    ->label('Kode Hewan')
+                    ->maxLength(255)
+                    ->unique(ignoreRecord: true)
+                    ->disabled(fn ($record) => $record !== null) // Disable editing existing kode
+                    ->dehydrated()
+                    ->helperText('Kode akan otomatis di-generate berdasarkan kategori'),
+
                 Forms\Components\TextInput::make('bobot')
+                    ->label('Bobot (kg)')
                     ->required()
-                    ->numeric(),
-                Forms\Components\Toggle::make('penyembelihan')
-                    ->required(),
-                Forms\Components\Toggle::make('pengulitan')
-                    ->required(),
-                Forms\Components\Toggle::make('penimbangan')
-                    ->required(),
+                    ->numeric()
+                    ->minValue(0.01)
+                    ->maxValue(999.99)
+                    ->suffix('kg')
+                    ->step(0.01),
+
+                Forms\Components\Section::make('Status Workflow')
+                    ->schema([
+                        Forms\Components\Toggle::make('penyembelihan')
+                            ->label('Sudah Disembelih')
+                            ->default(false),
+                        Forms\Components\Toggle::make('pengulitan')
+                            ->label('Sudah Dikuliti')
+                            ->default(false),
+                        Forms\Components\Toggle::make('penimbangan')
+                            ->label('Sudah Ditimbang')
+                            ->default(false),
+                    ])
+                    ->columns(3),
             ]);
     }
 
@@ -83,16 +117,96 @@ class ListHewanResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('kategori')
+                    ->relationship('kategori', 'nama_kategori')
+                    ->searchable()
+                    ->preload()
+                    ->multiple()
+                    ->label('Kategori Hewan'),
+
+                Tables\Filters\TernaryFilter::make('penyembelihan')
+                    ->label('Status Penyembelihan')
+                    ->placeholder('Semua')
+                    ->trueLabel('Sudah Disembelih')
+                    ->falseLabel('Belum Disembelih'),
+
+                Tables\Filters\TernaryFilter::make('pengulitan')
+                    ->label('Status Pengulitan')
+                    ->placeholder('Semua')
+                    ->trueLabel('Sudah Dikuliti')
+                    ->falseLabel('Belum Dikuliti'),
+
+                Tables\Filters\TernaryFilter::make('penimbangan')
+                    ->label('Status Penimbangan')
+                    ->placeholder('Semua')
+                    ->trueLabel('Sudah Ditimbang')
+                    ->falseLabel('Belum Ditimbang'),
+
+                Tables\Filters\TrashedFilter::make()
+                    ->label('Status Data'),
+
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')
+                            ->label('Dibuat Dari'),
+                        Forms\Components\DatePicker::make('created_until')
+                            ->label('Dibuat Sampai'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when($data['created_from'], fn ($q, $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'], fn ($q, $date) => $q->whereDate('created_at', '<=', $date));
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                        if ($data['created_from'] ?? null) {
+                            $indicators['created_from'] = 'Dibuat dari ' . \Carbon\Carbon::parse($data['created_from'])->toFormattedDateString();
+                        }
+                        if ($data['created_until'] ?? null) {
+                            $indicators['created_until'] = 'Dibuat sampai ' . \Carbon\Carbon::parse($data['created_until'])->toFormattedDateString();
+                        }
+                        return $indicators;
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\RestoreBulkAction::make(),
+                    Tables\Actions\ForceDeleteBulkAction::make(),
+
+                    // Custom bulk actions for workflow status
+                    Tables\Actions\BulkAction::make('mark_penyembelihan')
+                        ->label('Tandai Sudah Disembelih')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(fn ($records) => $records->each->update(['penyembelihan' => true]))
+                        ->deselectRecordsAfterCompletion(),
+
+                    Tables\Actions\BulkAction::make('mark_pengulitan')
+                        ->label('Tandai Sudah Dikuliti')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->action(fn ($records) => $records->each->update(['pengulitan' => true]))
+                        ->deselectRecordsAfterCompletion(),
+
+                    Tables\Actions\BulkAction::make('mark_penimbangan')
+                        ->label('Tandai Sudah Ditimbang')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('info')
+                        ->requiresConfirmation()
+                        ->action(fn ($records) => $records->each->update(['penimbangan' => true]))
+                        ->deselectRecordsAfterCompletion(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
