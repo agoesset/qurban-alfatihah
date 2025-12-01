@@ -2,7 +2,12 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+use App\Models\Kategori;
+use App\Models\ListHewan;
+use App\Models\ListDistribusi;
+use App\Policies\KategoriPolicy;
+use App\Policies\ListHewanPolicy;
+use App\Policies\ListDistribusiPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -13,7 +18,9 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        //
+        ListHewan::class => ListHewanPolicy::class,
+        ListDistribusi::class => ListDistribusiPolicy::class,
+        Kategori::class => KategoriPolicy::class,
     ];
 
     /**

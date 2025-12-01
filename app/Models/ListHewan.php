@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
 class ListHewan extends Model
 {
-    // Jika Anda menggunakan soft deletes
-    use SoftDeletes;
+    use SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'kode_hewan', 'kategori_id', 'bobot', 'penyembelihan', 'pengulitan', 'penimbangan',
@@ -48,5 +48,24 @@ class ListHewan extends Model
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'kategori_id');
+    }
+
+    /**
+     * Get the activity log name for this model
+     */
+    protected function getActivityLogName(): string
+    {
+        return 'hewan';
+    }
+
+    /**
+     * Get additional properties to be logged
+     */
+    protected function getActivityProperties(): array
+    {
+        return [
+            'kode_hewan' => $this->kode_hewan,
+            'kategori' => $this->kategori?->nama_kategori,
+        ];
     }
 }
