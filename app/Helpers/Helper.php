@@ -1,217 +1,340 @@
 <?php
 
+namespace App\Helpers;
+
 use App\Models\ListDistribusi;
 use App\Models\ListHewan;
+use App\Models\Kategori;
 use Carbon\Carbon;
 
 class Helper
 {
-    public static function countDomba()
+    // Constants untuk jenis hewan (sementara, akan diganti dengan database column)
+    private const JENIS_DOMBA = 'domba';
+    private const JENIS_KAMBING = 'kambing';
+    private const JENIS_SAPI = 'sapi';
+
+    /**
+     * Get kategori IDs by jenis hewan based on nama_kategori pattern
+     */
+    private static function getKategoriIdsByJenis(string $jenis): array
     {
-        return ListHewan::whereBetween('kategori_id', [1, 6])->count();
+        $pattern = match($jenis) {
+            self::JENIS_DOMBA => 'Domba%',
+            self::JENIS_KAMBING => 'Kambing%',
+            self::JENIS_SAPI => 'Sapi%',
+            default => ''
+        };
+
+        return Kategori::where('nama_kategori', 'like', $pattern)->pluck('id')->toArray();
     }
 
-    public static function countKambing()
+    // ========== COUNT METHODS ==========
+
+    public static function countDomba(): int
     {
-        return ListHewan::whereBetween('kategori_id', [7, 12])->count();
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_DOMBA);
+        return ListHewan::whereIn('kategori_id', $kategoriIds)->count();
     }
 
-    public static function countSapi()
+    public static function countKambing(): int
     {
-        return ListHewan::whereBetween('kategori_id', [13, 15])->count();
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_KAMBING);
+        return ListHewan::whereIn('kategori_id', $kategoriIds)->count();
     }
 
-    public static function sembelihDomba()
+    public static function countSapi(): int
     {
-        return ListHewan::whereBetween('kategori_id', [1, 6])->where('penyembelihan', true)->count();
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_SAPI);
+        return ListHewan::whereIn('kategori_id', $kategoriIds)->count();
     }
 
-    public static function sembelihKambing()
+    // ========== PENYEMBELIHAN METHODS ==========
+
+    public static function sembelihDomba(): int
     {
-        return ListHewan::whereBetween('kategori_id', [7, 12])->where('penyembelihan', true)->count();
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_DOMBA);
+        return ListHewan::whereIn('kategori_id', $kategoriIds)
+            ->where('penyembelihan', true)
+            ->count();
     }
 
-    public static function sembelihSapi()
+    public static function sembelihKambing(): int
     {
-        return ListHewan::whereBetween('kategori_id', [13, 15])->where('penyembelihan', true)->count();
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_KAMBING);
+        return ListHewan::whereIn('kategori_id', $kategoriIds)
+            ->where('penyembelihan', true)
+            ->count();
     }
 
-    public static function kulitDomba()
+    public static function sembelihSapi(): int
     {
-        return ListHewan::whereBetween('kategori_id', [1, 6])->where('pengulitan', true)->count();
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_SAPI);
+        return ListHewan::whereIn('kategori_id', $kategoriIds)
+            ->where('penyembelihan', true)
+            ->count();
     }
 
-    public static function kulitKambing()
+    // ========== PENGULITAN METHODS ==========
+
+    public static function kulitDomba(): int
     {
-        return ListHewan::whereBetween('kategori_id', [7, 12])->where('pengulitan', true)->count();
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_DOMBA);
+        return ListHewan::whereIn('kategori_id', $kategoriIds)
+            ->where('pengulitan', true)
+            ->count();
     }
 
-    public static function kulitSapi()
+    public static function kulitKambing(): int
     {
-        return ListHewan::whereBetween('kategori_id', [13, 15])->where('pengulitan', true)->count();
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_KAMBING);
+        return ListHewan::whereIn('kategori_id', $kategoriIds)
+            ->where('pengulitan', true)
+            ->count();
     }
 
-    public static function timbangDomba()
+    public static function kulitSapi(): int
     {
-        return ListHewan::whereBetween('kategori_id', [1, 6])->where('penimbangan', true)->count();
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_SAPI);
+        return ListHewan::whereIn('kategori_id', $kategoriIds)
+            ->where('pengulitan', true)
+            ->count();
     }
 
-    public static function timbangKambing()
+    // ========== PENIMBANGAN METHODS ==========
+
+    public static function timbangDomba(): int
     {
-        return ListHewan::whereBetween('kategori_id', [7, 12])->where('penimbangan', true)->count();
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_DOMBA);
+        return ListHewan::whereIn('kategori_id', $kategoriIds)
+            ->where('penimbangan', true)
+            ->count();
     }
 
-    public static function timbangSapi()
+    public static function timbangKambing(): int
     {
-        return ListHewan::whereBetween('kategori_id', [13, 15])->where('penimbangan', true)->count();
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_KAMBING);
+        return ListHewan::whereIn('kategori_id', $kategoriIds)
+            ->where('penimbangan', true)
+            ->count();
     }
 
-    public static function lastUpdatedPenyembelihanDomba()
+    public static function timbangSapi(): int
     {
-        $lastUpdated = ListHewan::whereBetween('kategori_id', [1, 6])
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_SAPI);
+        return ListHewan::whereIn('kategori_id', $kategoriIds)
+            ->where('penimbangan', true)
+            ->count();
+    }
+
+    // ========== LAST UPDATED PENYEMBELIHAN ==========
+
+    public static function lastUpdatedPenyembelihanDomba(): ?Carbon
+    {
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_DOMBA);
+        $lastUpdated = ListHewan::whereIn('kategori_id', $kategoriIds)
             ->where('penyembelihan', true)
             ->latest('penyembelihan_updated_at')
             ->first();
-        return $lastUpdated ? $lastUpdated->penyembelihan_updated_at : 'Tidak ada data';
+
+        return $lastUpdated?->penyembelihan_updated_at;
     }
 
-    public static function lastUpdatedPenyembelihanKambing()
+    public static function lastUpdatedPenyembelihanKambing(): ?Carbon
     {
-        $lastUpdated = ListHewan::whereBetween('kategori_id', [7, 12])
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_KAMBING);
+        $lastUpdated = ListHewan::whereIn('kategori_id', $kategoriIds)
             ->where('penyembelihan', true)
             ->latest('penyembelihan_updated_at')
             ->first();
-        return $lastUpdated ? $lastUpdated->penyembelihan_updated_at : 'Tidak ada data';
+
+        return $lastUpdated?->penyembelihan_updated_at;
     }
 
-    public static function lastUpdatedPenyembelihanSapi()
+    public static function lastUpdatedPenyembelihanSapi(): ?Carbon
     {
-        $lastUpdated = ListHewan::whereBetween('kategori_id', [13, 15])
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_SAPI);
+        $lastUpdated = ListHewan::whereIn('kategori_id', $kategoriIds)
             ->where('penyembelihan', true)
             ->latest('penyembelihan_updated_at')
             ->first();
-        return $lastUpdated ? $lastUpdated->penyembelihan_updated_at : 'Tidak ada data';
+
+        return $lastUpdated?->penyembelihan_updated_at;
     }
 
-    public static function lastUpdatedPengulitanDomba()
+    // ========== LAST UPDATED PENGULITAN ==========
+
+    public static function lastUpdatedPengulitanDomba(): ?Carbon
     {
-        $lastUpdated = ListHewan::whereBetween('kategori_id', [1, 6])
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_DOMBA);
+        $lastUpdated = ListHewan::whereIn('kategori_id', $kategoriIds)
             ->where('pengulitan', true)
             ->latest('pengulitan_updated_at')
             ->first();
-        return $lastUpdated ? $lastUpdated->pengulitan_updated_at : 'Tidak ada data';
+
+        return $lastUpdated?->pengulitan_updated_at;
     }
 
-    public static function lastUpdatedPengulitanKambing()
+    public static function lastUpdatedPengulitanKambing(): ?Carbon
     {
-        $lastUpdated = ListHewan::whereBetween('kategori_id', [7, 12])
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_KAMBING);
+        $lastUpdated = ListHewan::whereIn('kategori_id', $kategoriIds)
             ->where('pengulitan', true)
             ->latest('pengulitan_updated_at')
             ->first();
-        return $lastUpdated ? $lastUpdated->pengulitan_updated_at : 'Tidak ada data';
+
+        return $lastUpdated?->pengulitan_updated_at;
     }
 
-    public static function lastUpdatedPengulitanSapi()
+    public static function lastUpdatedPengulitanSapi(): ?Carbon
     {
-        $lastUpdated = ListHewan::whereBetween('kategori_id', [13, 15])
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_SAPI);
+        $lastUpdated = ListHewan::whereIn('kategori_id', $kategoriIds)
             ->where('pengulitan', true)
             ->latest('pengulitan_updated_at')
             ->first();
-        return $lastUpdated ? $lastUpdated->pengulitan_updated_at : 'Tidak ada data';
+
+        return $lastUpdated?->pengulitan_updated_at;
     }
 
-    public static function lastUpdatedPenimbanganDomba()
+    // ========== LAST UPDATED PENIMBANGAN ==========
+
+    public static function lastUpdatedPenimbanganDomba(): ?Carbon
     {
-        $lastUpdated = ListHewan::whereBetween('kategori_id', [1, 6])
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_DOMBA);
+        $lastUpdated = ListHewan::whereIn('kategori_id', $kategoriIds)
             ->where('penimbangan', true)
             ->latest('penimbangan_updated_at')
             ->first();
-        return $lastUpdated ? $lastUpdated->penimbangan_updated_at : 'Tidak ada data';
+
+        return $lastUpdated?->penimbangan_updated_at;
     }
 
-    public static function lastUpdatedPenimbanganKambing()
+    public static function lastUpdatedPenimbanganKambing(): ?Carbon
     {
-        $lastUpdated = ListHewan::whereBetween('kategori_id', [7, 12])
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_KAMBING);
+        $lastUpdated = ListHewan::whereIn('kategori_id', $kategoriIds)
             ->where('penimbangan', true)
             ->latest('penimbangan_updated_at')
             ->first();
-        return $lastUpdated ? $lastUpdated->penimbangan_updated_at : 'Tidak ada data';
+
+        return $lastUpdated?->penimbangan_updated_at;
     }
 
-    public static function lastUpdatedPenimbanganSapi()
+    public static function lastUpdatedPenimbanganSapi(): ?Carbon
     {
-        $lastUpdated = ListHewan::whereBetween('kategori_id', [13, 15])
+        $kategoriIds = self::getKategoriIdsByJenis(self::JENIS_SAPI);
+        $lastUpdated = ListHewan::whereIn('kategori_id', $kategoriIds)
             ->where('penimbangan', true)
             ->latest('penimbangan_updated_at')
             ->first();
-        return $lastUpdated ? $lastUpdated->penimbangan_updated_at : 'Tidak ada data';
+
+        return $lastUpdated?->penimbangan_updated_at;
     }
 
-    public static function countDaging()
+    // ========== DISTRIBUSI COUNT METHODS (FIXED JSON QUERIES) ==========
+
+    public static function countDaging(): int
     {
-        return ListDistribusi::where('request', '"Daging"')->sum('jumlah');
+        return ListDistribusi::where(function($query) {
+            $query->whereJsonContains('request', 'Daging')
+                ->orWhereJsonContains('request', 'Daging Domba')
+                ->orWhereJsonContains('request', 'Daging Kambing')
+                ->orWhereJsonContains('request', 'Daging Sapi');
+        })->sum('jumlah') ?? 0;
     }
 
-    public static function countJeroan()
+    public static function countJeroan(): int
     {
-        return ListDistribusi::where('request', '"Jeroan"')->sum('jumlah');
+        return ListDistribusi::whereJsonContains('request', 'Jeroan')
+            ->sum('jumlah') ?? 0;
     }
 
-    public static function countKepalaKaki()
+    public static function countKepalaKaki(): int
     {
-        return ListDistribusi::where('request', '"Kepala & Kaki"')->sum('jumlah');
+        return ListDistribusi::whereJsonContains('request', 'Kepala & Kaki')
+            ->sum('jumlah') ?? 0;
     }
 
-    public static function countShohibulQurban()
+    public static function countShohibulQurban(): int
     {
         return ListDistribusi::where('shohibul_qurban', true)->count();
     }
 
-    public static function countPenerimaManfaat()
+    public static function countPenerimaManfaat(): int
     {
         return ListDistribusi::where('shohibul_qurban', false)->count();
     }
 
-    public static function bungkusDaging()
+    // ========== PEMBUNGKUSAN METHODS (FIXED JSON QUERIES) ==========
+
+    public static function bungkusDaging(): int
     {
-        return ListDistribusi::where('terbungkus', true)->where('request', '"Daging"')->sum('jumlah');
+        return ListDistribusi::where('terbungkus', true)
+            ->where(function($query) {
+                $query->whereJsonContains('request', 'Daging')
+                    ->orWhereJsonContains('request', 'Daging Domba')
+                    ->orWhereJsonContains('request', 'Daging Kambing')
+                    ->orWhereJsonContains('request', 'Daging Sapi');
+            })
+            ->sum('jumlah') ?? 0;
     }
 
-    public static function bungkusJeroan()
+    public static function bungkusJeroan(): int
     {
-        return ListDistribusi::where('terbungkus', true)->where('request', '"Jeroan"')->sum('jumlah');
+        return ListDistribusi::where('terbungkus', true)
+            ->whereJsonContains('request', 'Jeroan')
+            ->sum('jumlah') ?? 0;
     }
 
-    public static function bungkusKepalaKaki()
+    public static function bungkusKepalaKaki(): int
     {
-        return ListDistribusi::where('terbungkus', true)->where('request', '"Kepala & Kaki"')->sum('jumlah');
+        return ListDistribusi::where('terbungkus', true)
+            ->whereJsonContains('request', 'Kepala & Kaki')
+            ->sum('jumlah') ?? 0;
     }
 
-    public static function distribusiShohibulQurban()
+    // ========== DISTRIBUSI STATUS METHODS ==========
+
+    public static function distribusiShohibulQurban(): int
     {
-        return ListDistribusi::where('shohibul_qurban', true)->where('terdistribusi', true)->count();
+        return ListDistribusi::where('shohibul_qurban', true)
+            ->where('terdistribusi', true)
+            ->count();
     }
 
-    public static function distribusiPenerimaManfaat()
+    public static function distribusiPenerimaManfaat(): int
     {
-        return ListDistribusi::where('shohibul_qurban', false)->where('terdistribusi', true)->count();
+        return ListDistribusi::where('shohibul_qurban', false)
+            ->where('terdistribusi', true)
+            ->count();
     }
 
-    public static function lastUpdatedPembungkusan()
+    // ========== LAST UPDATED METHODS (FIXED RETURN TYPES) ==========
+
+    public static function lastUpdatedPembungkusan(): ?Carbon
     {
-        return ListDistribusi::where('terbungkus', true)->latest('updated_at')->first()?->updated_at?->format('d-m-Y H:i:s') ?? 'Tidak ada data';
+        return ListDistribusi::where('terbungkus', true)
+            ->latest('updated_at')
+            ->first()
+            ?->updated_at;
     }
 
-    public static function lastUpdatedDistribusiQurban()
+    public static function lastUpdatedDistribusiQurban(): ?Carbon
     {
-        return ListDistribusi::where('terdistribusi', true)->latest('updated_at')->first()?->updated_at?->format('d-m-Y H:i:s') ?? 'Tidak ada data';
+        return ListDistribusi::where('terdistribusi', true)
+            ->latest('updated_at')
+            ->first()
+            ?->updated_at;
     }
 
-    public static function calculateProgress($countMethod, $progresMethod)
+    // ========== PROGRESS CALCULATION ==========
+
+    public static function calculateProgress(string $countMethod, string $progresMethod): array
     {
         $total = self::$countMethod();
         $progres = self::$progresMethod();
-        $persentase = $total > 0 ? ($progres / $total) * 100 : 0;
+        $persentase = $total > 0 ? round(($progres / $total) * 100, 2) : 0;
 
         return [
             'total' => $total,

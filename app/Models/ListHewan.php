@@ -16,8 +16,14 @@ class ListHewan extends Model
         'penyembelihan_updated_at', 'pengulitan_updated_at', 'penimbangan_updated_at'
     ];
 
-    protected $dates = [
-        'penyembelihan_updated_at', 'pengulitan_updated_at', 'penimbangan_updated_at'
+    protected $casts = [
+        'penyembelihan' => 'boolean',
+        'pengulitan' => 'boolean',
+        'penimbangan' => 'boolean',
+        'penyembelihan_updated_at' => 'datetime',
+        'pengulitan_updated_at' => 'datetime',
+        'penimbangan_updated_at' => 'datetime',
+        'bobot' => 'decimal:2',
     ];
 
     protected static function boot()

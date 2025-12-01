@@ -21,5 +21,9 @@ class ListDistribusi extends Model
 
     protected $casts = [
         'request' => 'array',
+        'shohibul_qurban' => 'boolean',
+        'terbungkus' => 'boolean',
+        'terdistribusi' => 'boolean',
+        'jumlah' => 'integer',
     ];
 }
