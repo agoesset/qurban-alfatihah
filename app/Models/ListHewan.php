@@ -50,6 +50,53 @@ class ListHewan extends Model
         return $this->belongsTo(Kategori::class, 'kategori_id');
     }
 
+    // ========== QUERY SCOPES ==========
+
+    /**
+     * Scope to filter by jenis hewan (domba, kambing, sapi)
+     */
+    public function scopeOfJenis($query, string $jenis)
+    {
+        $pattern = match($jenis) {
+            'domba' => 'Domba%',
+            'kambing' => 'Kambing%',
+            'sapi' => 'Sapi%',
+            default => null
+        };
+
+        if (!$pattern) {
+            return $query;
+        }
+
+        return $query->whereHas('kategori', function($q) use ($pattern) {
+            $q->where('nama_kategori', 'like', $pattern);
+        });
+    }
+
+    /**
+     * Scope to filter by penyembelihan status
+     */
+    public function scopeDisembelih($query, bool $status = true)
+    {
+        return $query->where('penyembelihan', $status);
+    }
+
+    /**
+     * Scope to filter by pengulitan status
+     */
+    public function scopeDikuliti($query, bool $status = true)
+    {
+        return $query->where('pengulitan', $status);
+    }
+
+    /**
+     * Scope to filter by penimbangan status
+     */
+    public function scopeDitimbang($query, bool $status = true)
+    {
+        return $query->where('penimbangan', $status);
+    }
+
     /**
      * Get the activity log name for this model
      */
